@@ -31,6 +31,21 @@ _CITATION = """
 DELPHES_CLASS_NAMES = ["none" "charged hadron", "neutral hadron", "hfem", "hfhad", "photon", "electron", "muon"]
 PADDED_NUM_ELEM_SIZE = 6400
 
+#based on delphes/ntuplizer.py
+X_FEATURES = [
+    "typ_idx"
+    "pt",
+    "eta",
+    "sin_phi",
+    "cos_phi",
+    "e",
+    "eta_outer",
+    "sin_phi_outer",
+    "cos_phi_outer",
+    "charge",
+    "is_gen_muon",
+    "is_gen_electron",
+]
 
 class DelphesPf(tfds.core.GeneratorBasedBuilder):
     """DatasetBuilder for delphes_pf dataset."""
@@ -48,9 +63,9 @@ class DelphesPf(tfds.core.GeneratorBasedBuilder):
             description=_DESCRIPTION,
             features=tfds.features.FeaturesDict(
                 {
-                    "X": tfds.features.Tensor(shape=(1, 6400, 12), dtype=tf.float32),
-                    "ygen": tfds.features.Tensor(shape=(1, 6400, 7), dtype=tf.float32),
-                    "ycand": tfds.features.Tensor(shape=(1, 6400, 7), dtype=tf.float32),
+                    "X": tfds.features.Tensor(shape=(6400, 12), dtype=tf.float32),
+                    "ygen": tfds.features.Tensor(shape=(6400, 7), dtype=tf.float32),
+                    "ycand": tfds.features.Tensor(shape=(6400, 7), dtype=tf.float32),
                 }
             ),
             # If there's a common (input, target) tuple from the
@@ -59,6 +74,7 @@ class DelphesPf(tfds.core.GeneratorBasedBuilder):
             supervised_keys=("X", "ygen"),  # Set to `None` to disable
             homepage="",
             citation=_CITATION,
+            metadata=tfds.core.MetadataDict(x_features=X_FEATURES),
         )
 
     def _split_generators(self, dl_manager: tfds.download.DownloadManager):
@@ -73,11 +89,11 @@ class DelphesPf(tfds.core.GeneratorBasedBuilder):
         qcd_dir = delphes_dir / "pythia8_qcd/val"
 
         if not ttbar_dir.exists():
-            ttbar_dir.mkdir()
+            ttbar_dir.mkdir(parents=True)
             for ttbar_file in delphes_dir.glob("*ttbar*.pkl.bz2"):
                 ttbar_file.rename(ttbar_dir / ttbar_file.name)
         if not qcd_dir.exists():
-            qcd_dir.mkdir()
+            qcd_dir.mkdir(parents=True)
             for qcd_file in delphes_dir.glob("*qcd*.pkl.bz2"):
                 qcd_file.rename(qcd_dir / qcd_file.name)
 
@@ -89,15 +105,12 @@ class DelphesPf(tfds.core.GeneratorBasedBuilder):
     def _generate_examples(self, path):
         """Yields examples."""
         for fi in path.glob("*.pkl.bz2"):
-            X, ygen, ycand = self.prepare_data_delphes((str(fi)))
-            for ii in range(X[0].shape[0]):
-                x = [X[0][ii]]
-                yg = [ygen[0][ii]]
-                yc = [ycand[0][ii]]
-                yield str(fi) + "_" + str(ii), {
-                    "X": x,
-                    "ygen": yg,
-                    "ycand": yc,
+            X, ygen, ycand = self.prepare_data_delphes(str(fi))
+            for ibatch in range(X.shape[0]): 
+                yield str(fi) + "_" + str(ibatch), {
+                    "X": X[ibatch],
+                    "ygen": ygen[ibatch],
+                    "ycand": ycand[ibatch],
                 }
 
     def prepare_data_delphes(self, fname):
@@ -131,9 +144,10 @@ class DelphesPf(tfds.core.GeneratorBasedBuilder):
             ygens.append(ygen)
             ycands.append(ycand)
 
-        X = [np.concatenate(Xs)]
-        ygen = [np.concatenate(ygens)]
-        ycand = [np.concatenate(ycands)]
+        X = np.concatenate(Xs)
+        ygen = np.concatenate(ygens)
+        ycand = np.concatenate(ycands)
+
         del data
         return X, ygen, ycand
 
