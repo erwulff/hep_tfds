@@ -50,9 +50,10 @@ X_FEATURES = [
 class DelphesPf(tfds.core.GeneratorBasedBuilder):
     """DatasetBuilder for delphes_pf dataset."""
 
-    VERSION = tfds.core.Version("1.0.0")
+    VERSION = tfds.core.Version("1.0.1")
     RELEASE_NOTES = {
         "1.0.0": "Initial release.",
+        "1.0.1": "Special release for benchmarking.",
     }
 
     def _info(self) -> tfds.core.DatasetInfo:
