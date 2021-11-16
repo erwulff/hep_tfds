@@ -24,10 +24,11 @@ PADDED_NUM_ELEM_SIZE = 6400
 class CmsPfTtbar(tfds.core.GeneratorBasedBuilder):
     """DatasetBuilder for cms_pf dataset."""
 
-    VERSION = tfds.core.Version("1.1.0")
+    VERSION = tfds.core.Version("1.2.0")
     RELEASE_NOTES = {
         "1.0.0": "Initial release.",
         "1.1.0": "Add muon type, fix electron GSF association",
+        "1.2.0": "12_1_0_pre3 generation, add corrected energy, cluster flags, 20k events",
     }
     MANUAL_DOWNLOAD_INSTRUCTIONS = """
     mkdir -p data

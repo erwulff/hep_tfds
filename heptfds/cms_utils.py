@@ -13,26 +13,12 @@ CLASS_LABELS_CMS = [0, 211, 130, 1, 2, 22, 11, 13]
 CLASS_NAMES_CMS = ["none", "ch.had", "n.had", "HFEM", "HFHAD", "gamma", "ele", "mu"]
 
 X_FEATURES = [
-    "typ_idx",
-    "pt",
-    "eta",
-    "phi",
-    "e",
-    "layer",
-    "depth",
-    "charge",
-    "trajpoint",
-    "eta_ecal",
-    "phi_ecal",
-    "eta_hcal",
-    "phi_hcal",
-    "muon_dt_hits",
-    "muon_csc_hits",
-    "muon_type",
-    "gsf_brem_sc_energy",
-    "num_hits"
+    "typ_idx", "pt", "eta", "phi", "e",
+    "layer", "depth", "charge", "trajpoint", 
+    "eta_ecal", "phi_ecal", "eta_hcal", "phi_hcal", "muon_dt_hits", "muon_csc_hits", "muon_type",
+    "px", "py", "pz", "deltap", "sigmadeltap", "gsf_electronseed_trkorecal", "num_hits", "cluster_flags", "corr_energy"
 ]
-                    
+               
 Y_FEATURES = [
     "typ_idx",
     "charge",
